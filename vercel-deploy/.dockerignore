@@ -1,0 +1,39 @@
+# Dependencies
+node_modules/
+.pnp/
+.pnp.js
+
+# Build output (rebuilt inside Docker)
+.next/
+out/
+
+# Environment files (injected at runtime / build ARG)
+.env
+.env.*
+!.env.example
+
+# IDE / Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Git
+.git/
+.gitignore
+
+# Docker
+Dockerfile
+docker-compose*.yml
+.dockerignore
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# TypeScript build cache
+tsconfig.tsbuildinfo
+
+# Testing & linting
+coverage/
+.eslintcache

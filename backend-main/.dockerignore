@@ -1,0 +1,45 @@
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+
+# Virtual environments
+venv/
+.venv/
+env/
+
+# IDE / Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Git
+.git/
+.gitignore
+
+# Test files
+test_*.py
+verify_all.py
+
+# Logs & temp files
+*.log
+audit_log.jsonl
+audit_log.jsonl.*
+err.txt
+grpc_log.txt
+install_log*.txt
+
+# Docker & deploy config (not needed inside the image)
+Dockerfile
+docker-compose*.yml
+.dockerignore
+railway.toml
+
+# Duplicate GeoLite2 folder (root .mmdb is mounted via volume)
+GeoLite2-City_20260227/
+
+# Environment files (secrets injected at runtime via env_file)
+.env
+.env.*
