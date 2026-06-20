@@ -5,5 +5,10 @@
       "source": "/api/:path*",
       "destination": "/api/index.py"
     }
-  ]
+  ],
+  "functions": {
+    "api/index.py": {
+      "excludeFiles": "{node_modules/**,.next/**,app/**,components/**,public/**,styles/**,hooks/**,lib/**,contexts/**}"
+    }
+  }
 }
