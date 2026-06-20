@@ -7,8 +7,31 @@
     }
   ],
   "functions": {
+    "api/**/*.py": {
+      "excludeFiles": [
+        "node_modules/**",
+        ".next/**",
+        "app/**",
+        "components/**",
+        "public/**",
+        "styles/**",
+        "hooks/**",
+        "lib/**",
+        "contexts/**"
+      ]
+    },
     "api/index.py": {
-      "excludeFiles": "{node_modules/**,.next/**,app/**,components/**,public/**,styles/**,hooks/**,lib/**,contexts/**}"
+      "excludeFiles": [
+        "node_modules/**",
+        ".next/**",
+        "app/**",
+        "components/**",
+        "public/**",
+        "styles/**",
+        "hooks/**",
+        "lib/**",
+        "contexts/**"
+      ]
     }
   }
 }
