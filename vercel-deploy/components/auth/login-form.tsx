@@ -20,10 +20,16 @@ export function LoginForm() {
     const {
         register,
         handleSubmit,
+        setValue,
         formState: { errors },
     } = useForm<LoginInput>({
         resolver: zodResolver(loginSchema),
     });
+
+    const handleAutofillDemo = () => {
+        setValue("email", "admin@privacyproxy.io");
+        setValue("password", "password");
+    };
 
     const onSubmit = async (data: LoginInput) => {
         setLoading(true);
@@ -45,6 +51,18 @@ export function LoginForm() {
 
     return (
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
+            <div className="p-3 rounded-lg border border-primary/20 bg-primary/5 text-xs text-muted-foreground flex flex-col gap-1.5">
+                <span className="font-mono text-[10px] uppercase tracking-wider text-primary font-semibold">🔒 Demo Access Mode</span>
+                <p>Sign in with pre-configured administrator credentials or register a custom sandbox account.</p>
+                <button 
+                    type="button" 
+                    onClick={handleAutofillDemo}
+                    className="mt-1 font-semibold text-primary hover:underline text-left flex items-center gap-1 self-start cursor-pointer"
+                >
+                    Autofill Demo Credentials
+                </button>
+            </div>
+
             <div className="space-y-2">
                 <label className="text-xs font-mono uppercase tracking-widest text-muted-foreground ml-1">
                     Secure Email
