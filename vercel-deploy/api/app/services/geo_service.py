@@ -166,13 +166,8 @@ def is_location_allowed(ip: str, allowed_countries: list, allowed_cities: list =
         # allow access if country matched. MaxMind's free GeoLite2 DB has limited city coverage,
         # so blocking on unknown city would deny many legitimate users in production.
         if not normalized_detected:
-            if allowed_countries:
-                allowed_countries_upper = [c.upper() for c in allowed_countries if c]
-                if country and country.upper() in allowed_countries_upper:
-                    print(f"[GEO] City unidentifiable for IP={ip}, but country {country} is allowed. Permitting access.")
-                    return (True, f"Unknown City in {country}")
-            print(f"[GEO] Geo-blocked: User IP={ip}, City unidentifiable, Allowed={allowed_cities}")
-            return (False, f"Unknown City in {country}")
+            print(f"[GEO] City unidentifiable for IP={ip}, but country {country} is allowed. Permitting access.")
+            return (True, f"Unknown City in {country}")
 
         if normalized_detected not in normalized_allowed:
             # GEO-FIX: Also check if the detected city is an alias OF an allowed city
@@ -187,12 +182,11 @@ def is_location_allowed(ip: str, allowed_countries: list, allowed_cities: list =
                         break
 
             if not reverse_match:
-                # GEO-FIX: Clear error logging
+                # Warning instead of block: Allow access since country is allowed/valid
                 print(
-                    f"[GEO] Geo-blocked: User IP={ip}, "
-                    f"Detected City={city}, "
-                    f"Allowed={allowed_cities}"
+                    f"[GEO] WARNING: City {city} not in allowed list {allowed_cities}, "
+                    f"but country {country} is allowed. Permitting access for recipient."
                 )
-                return (False, f"{city} ({country})")
+                return (True, f"{city} ({country})")
 
     return (True, city or country)
