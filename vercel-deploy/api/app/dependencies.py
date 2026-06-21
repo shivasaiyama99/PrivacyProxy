@@ -38,7 +38,7 @@ async def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(s
             raise HTTPException(status_code=403, detail="Account disabled")
         return user
     except Exception as db_err:
-        print(f"[DB] ⚠️ MongoDB error during authentication: {db_err}. Returning offline authenticated user.")
+        print(f"[DB] WARNING: MongoDB error during authentication: {db_err}. Returning offline authenticated user.")
         role = payload.get("role", "user")
         return {
             "_id": ObjectId(user_id) if ObjectId.is_valid(user_id) else ObjectId("60c72b2f9b1d8e234c000002"),

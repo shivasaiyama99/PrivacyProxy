@@ -180,12 +180,12 @@ audit_log_service = AuditLogService(log_path=log_path)
 async def startup_event():
     """Initialize the NLP Engine on startup to avoid lag on first request."""
     global redaction_engine
-    print("🚀 Loading PII Shield Engine...")
+    print("[INFO] Loading PII Shield Engine...")
     redaction_engine = RedactionEngine()
     set_redaction_engine(redaction_engine)  # Share with MCP server
-    print("🚀 PII Shield Ready!")
+    print("[INFO] PII Shield Ready!")
     await init_db()
-    print("🚀 MCP Server mounted at /mcp/sse")
+    print("[INFO] MCP Server mounted at /mcp/sse")
 
 # Explicit OPTIONS handlers so CORS preflight always gets 200 (avoids 400/405)
 @app.options("/sanitize")

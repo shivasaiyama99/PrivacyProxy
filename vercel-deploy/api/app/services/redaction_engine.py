@@ -203,7 +203,7 @@ class RedactionEngine:
     def __init__(self):
         # Load the small spacy model (en_core_web_sm) to fit inside the serverless size limits
         try:
-            from presidio_analyzer import NlpEngineProvider
+            from presidio_analyzer.nlp_engine import NlpEngineProvider
             configuration = {
                 "nlp_engine_name": "spacy",
                 "models": [{"lang_code": "en", "model_name": "en_core_web_sm"}],

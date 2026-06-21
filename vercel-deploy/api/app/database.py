@@ -50,5 +50,5 @@ async def init_db():
         })
         print(f"[DB] Cleared {res.deleted_count} invalid audit logs")
     except Exception as e:
-        print(f"[DB] ⚠️ MongoDB connection or init failed: {e}. Running in offline/mock database mode.")
+        print(f"[DB] WARNING: MongoDB connection or init failed: {e}. Running in offline/mock database mode.")
 
