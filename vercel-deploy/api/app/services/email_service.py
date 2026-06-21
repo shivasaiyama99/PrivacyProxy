@@ -177,14 +177,15 @@ def _send_email(to_email: str, subject: str, plain_text: str, html_content: str)
 # ══════════════════════════════════════════════
 # PUBLIC API: User Verification Email
 # ══════════════════════════════════════════════
-def send_user_verification_email(email: str, code: str) -> bool:
+def send_user_verification_email(email: str, code: str, app_url: str = None) -> bool:
     """
     Send a registration verification email with:
     - 6-digit access code for manual entry
     - JWT magic link for one-click verification
     """
+    base_url = app_url or APP_URL
     magic_token = create_email_verification_token(email)
-    magic_link = f"{APP_URL}/auth/verify?token={magic_token}"
+    magic_link = f"{base_url}/auth/verify?token={magic_token}"
 
     subject = "🔐 Verify Your PrivacyProxy Account"
 

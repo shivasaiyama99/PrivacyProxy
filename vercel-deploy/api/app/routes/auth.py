@@ -96,7 +96,8 @@ async def register(body: UserCreate, response: Response, request: Request):
 
     # Send verification email (non-blocking — don't fail registration if email fails)
     try:
-        send_user_verification_email(email_clean, user_doc.get("verification_code", "000000"))
+        origin = request.headers.get("origin") or APP_URL
+        send_user_verification_email(email_clean, user_doc.get("verification_code", "000000"), app_url=origin)
         print(f"[EMAIL] Verification email sent to {email_clean}")
     except Exception as e:
         print(f"[EMAIL] ⚠️ Failed to send verification email: {e}")
@@ -339,7 +340,7 @@ async def verify_code(body: VerifyCodeRequest):
 # POST /auth/send-verification — Resend verification email
 # ──────────────────────────────────────────────
 @router.post("/send-verification")
-async def send_verification(body: SendVerificationRequest):
+async def send_verification(body: SendVerificationRequest, request: Request):
     user = await users_col.find_one({"email": body.email.lower().strip()})
     if not user:
         # Don't reveal if email exists — return success either way
@@ -361,7 +362,8 @@ async def send_verification(body: SendVerificationRequest):
     )
 
     try:
-        send_user_verification_email(user["email"], new_code)
+        origin = request.headers.get("origin") or APP_URL
+        send_user_verification_email(user["email"], new_code, app_url=origin)
         print(f"[EMAIL] Resent verification email to {user['email']}")
     except Exception as e:
         print(f"[EMAIL] ⚠️ Failed to resend verification email: {e}")

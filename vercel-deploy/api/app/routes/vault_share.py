@@ -41,7 +41,7 @@ qkd_service = QKDService()
 APP_URL = os.getenv("APP_URL", "http://localhost:3000")
 
 
-def link_doc_to_response(doc: dict) -> ShareLinkResponse:
+def link_doc_to_response(doc: dict, origin: str = APP_URL) -> ShareLinkResponse:
     # Ensure datetimes are serialized as ISO with 'Z' suffix for UTC
     def serialize_val(v):
         if isinstance(v, datetime):
@@ -58,7 +58,7 @@ def link_doc_to_response(doc: dict) -> ShareLinkResponse:
         status=doc["status"],
         created_at=serialize_val(doc["created_at"]),
         security={k: serialize_val(v) for k, v in doc["security"].items()},
-        share_url=f"{APP_URL}/viewer/{doc['token']}",
+        share_url=f"{origin}/viewer/{doc['token']}",
         access_code=doc.get("access_code"),
     )
 
@@ -68,8 +68,20 @@ def link_doc_to_response(doc: dict) -> ShareLinkResponse:
 # ──────────────────────────────────────────────
 @router.post("/share", response_model=ShareLinkResponse)
 async def create_share_link(
-    body: ShareLinkCreate, current_user: dict = Depends(get_current_user)
+    request: Request,
+    body: ShareLinkCreate,
+    current_user: dict = Depends(get_current_user)
 ):
+    # Determine origin dynamically
+    origin = request.headers.get("origin")
+    if not origin:
+        referer = request.headers.get("referer")
+        if referer:
+            from urllib.parse import urlparse
+            parsed = urlparse(referer)
+            origin = f"{parsed.scheme}://{parsed.netloc}"
+    if not origin:
+        origin = APP_URL
     # Verify file exists and belongs to user
     file_doc = await files_col.find_one(
         {"_id": ObjectId(body.file_id), "owner_id": current_user["_id"], "is_deleted": False}
@@ -154,7 +166,7 @@ async def create_share_link(
 
     # Send notification email to recipient with share link + access code
     try:
-        share_url = f"{APP_URL}/viewer/{token}"
+        share_url = f"{origin}/viewer/{token}"
         send_share_notification_email(
             recipient=body.recipient_email.lower().strip(),
             access_code=body.access_code,
@@ -166,7 +178,7 @@ async def create_share_link(
     except Exception as e:
         print(f"[EMAIL] ⚠️ Failed to send share notification: {e}")
 
-    return link_doc_to_response(link_doc)
+    return link_doc_to_response(link_doc, origin=origin)
 
 
 # ──────────────────────────────────────────────
@@ -174,8 +186,20 @@ async def create_share_link(
 # ──────────────────────────────────────────────
 @router.get("/links")
 async def list_links(
+    request: Request,
     status_filter: str = None, current_user: dict = Depends(get_current_user)
 ):
+    # Determine origin dynamically
+    origin = request.headers.get("origin")
+    if not origin:
+        referer = request.headers.get("referer")
+        if referer:
+            from urllib.parse import urlparse
+            parsed = urlparse(referer)
+            origin = f"{parsed.scheme}://{parsed.netloc}"
+    if not origin:
+        origin = APP_URL
+
     query = {"created_by": current_user["_id"]}
     if status_filter:
         query["status"] = status_filter
@@ -194,7 +218,7 @@ async def list_links(
             link["status"] = "expired"
 
     return {
-        "links": [link_doc_to_response(l) for l in links],
+        "links": [link_doc_to_response(l, origin=origin) for l in links],
         "total": len(links),
     }
 
