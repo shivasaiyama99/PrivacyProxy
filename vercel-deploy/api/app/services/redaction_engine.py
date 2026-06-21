@@ -201,22 +201,19 @@ def _deduplicate_overlapping(results: list) -> list:
 
 class RedactionEngine:
     def __init__(self):
-        # On Vercel, load the small spacy model to fit inside the serverless size limits.
-        import os
-        if os.getenv("VERCEL") is not None:
-            try:
-                from presidio_analyzer import NlpEngineProvider
-                configuration = {
-                    "nlp_engine_name": "spacy",
-                    "models": [{"project_name": "spacy", "model_name": "en_core_web_sm"}],
-                }
-                provider = NlpEngineProvider(nlp_engines_confs=configuration)
-                nlp_engine = provider.create_engine()
-                self.analyzer = AnalyzerEngine(nlp_engine=nlp_engine)
-            except Exception as e:
-                logger.warning("Failed to initialize custom NLP engine, falling back: %s", e)
-                self.analyzer = AnalyzerEngine()
-        else:
+        # Load the small spacy model (en_core_web_sm) to fit inside the serverless size limits
+        try:
+            from presidio_analyzer import NlpEngineProvider
+            configuration = {
+                "nlp_engine_name": "spacy",
+                "models": [{"lang_code": "en", "model_name": "en_core_web_sm"}],
+            }
+            provider = NlpEngineProvider(nlp_configuration=configuration)
+            nlp_engine = provider.create_engine()
+            self.analyzer = AnalyzerEngine(nlp_engine=nlp_engine)
+        except Exception as e:
+            logger.warning("Failed to initialize custom NLP engine, falling back to default: %s", e)
+            print(f"Failed to initialize custom NLP engine, falling back to default: {e}")
             self.analyzer = AnalyzerEngine()
 
         self.anonymizer = AnonymizerEngine()
