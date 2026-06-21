@@ -8,7 +8,10 @@ export default function SecureViewerPage() {
     const searchParams = useSearchParams();
     const token = params.token as string;
 
-    const API_BASE = process.env.NEXT_PUBLIC_API_BASE || 'http://localhost:8000';
+    const API_BASE = process.env.NEXT_PUBLIC_API_BASE || 
+        (typeof window !== "undefined" && window.location.hostname !== "localhost" && window.location.hostname !== "127.0.0.1"
+            ? "/api"
+            : "http://127.0.0.1:8000");
 
     // Phase 1: Verification State
     const [email, setEmail] = useState('');
